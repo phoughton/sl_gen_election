@@ -1,1 +1,4 @@
 pytest
+streamlit
+pandas
+streamlit-aggrid
