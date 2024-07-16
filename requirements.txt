@@ -2,3 +2,4 @@ pytest
 streamlit
 pandas
 streamlit-aggrid
+openpyxl
