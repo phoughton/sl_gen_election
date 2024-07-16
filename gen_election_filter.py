@@ -4,10 +4,15 @@ import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
+csv_files = {
+    '2017': 'data/candidate-level-results-general-election-08-06-2017.csv',
+    '2019': 'data/candidate-level-results-general-election-12-12-2019.csv'
+}
+
+
 def reset_state():
     st.session_state.selected_rows = None
-    df = pd.read_csv("candidate-level-results-general-election-12-12-2019.csv")
-    st.session_state['df'] = df
+    st.session_state['df'] = pd.read_csv(st.session_state['selected_file'])
 
 
 def to_excel(df):
@@ -49,12 +54,21 @@ def draw_chart(a_df):
 
 # Top Level layout setup
 st.set_page_config(layout="wide")
+selected_file_label = st.selectbox('Select CSV File', list(csv_files.keys()))
 
 selected_rows = None
 
-if 'df' not in st.session_state:
+if 'selected_file' not in st.session_state:
+    st.session_state['selected_file'] = csv_files[selected_file_label]
     reset_state()
 
+# Update session state if a new file is selected
+if st.session_state['selected_file'] != csv_files[selected_file_label]:
+    st.session_state['selected_file'] = csv_files[selected_file_label]
+    reset_state()
+
+if 'df' not in st.session_state:
+    reset_state()
 
 # Title of the app
 st.title("UK General Election 2019")
