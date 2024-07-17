@@ -1,18 +1,14 @@
-# Python Project Template for your projects
+# Python Streamlit - General Election Data Explorer
 
-Use as a template for python repos, just basics to support python development and testing.
+Lets you visualise data from recent general elections. You can then sort, filter or group the data as you wish.
 
+For example, 
+grouping by 'Main party name' and sorting by 'Candidate vote count' can you parties that received a lot of votes but few or even no seats in parliament.
 
-## Run the tests
+## Run the code
 ```bash
-python -m pytest
+streamlit run gen_election_filter.py
 ```
-## Debugger
 
-The `launch.json` file includes the necessary config to support using the vscode python debugger with pytest.
+Selecting items in the first table will cause a secondary table to appear, these items can be downloaded (as a spreadsheet) if needed (a button will appear).
 
-
-# Docker Container
-
-Here is the [Dockerfile](https://github.com/phoughton/python_dev_container) for this template repo.
-(Its in a seperate Repo)
