@@ -1,7 +1,7 @@
 from io import BytesIO
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 csv_files = {
@@ -116,7 +116,9 @@ with col2:
 
         selected_df = pd.DataFrame(selected_rows)
         excel_data = to_excel(selected_df)
+        mime = 'application/' +\
+            'vnd.openxmlformats-officedocument.spreadsheetml.sheet'
         st.download_button(label='Download Selected Data as Excel',
                            data=excel_data,
                            file_name='selected_data.xlsx',
-                           mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+                           mime=mime)
