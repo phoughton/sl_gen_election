@@ -5,6 +5,7 @@ from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
 
 
 csv_files = {
+    '2015': 'data/candidate-level-results-general-election-07-05-2015.csv',
     '2017': 'data/candidate-level-results-general-election-08-06-2017.csv',
     '2019': 'data/candidate-level-results-general-election-12-12-2019.csv'
 }
@@ -12,12 +13,15 @@ csv_files = {
 
 def reset_state():
     st.session_state.selected_rows = None
-    st.session_state['df'] = pd.read_csv(st.session_state['selected_file'])
+    local_df = pd.read_csv(st.session_state['selected_file'])
+    local_df.rename(columns={'General election polling date': 'Polling date'},
+                    inplace=True)
+    st.session_state['df'] = local_df
 
 
 def to_excel(df):
     output = BytesIO()
-    df.to_excel(output, index=False, sheet_name='Sheet1')
+    df.to_excel(output, index=False, sheet_name='Election_Data')
     output.seek(0)
     return output
 
@@ -60,10 +64,15 @@ with col_a:
     st.write('Select a file from the dropdown (right) and then filter or group the data.')
     st.write('Click on a row to see the selected data in a separate table below.')
 with col_b:
+
+    years = list(csv_files.keys())
+    selected_file_label = st.selectbox(
+        'Select CSV File',
+        years,
+        index=years.index(max(years)))
     if st.button('Reset to Defaults'):
         reset_state()
         st.experimental_rerun()
-    selected_file_label = st.selectbox('Select CSV File', list(csv_files.keys()), index=1)
     st.markdown("[Source Data](https://electionresults.parliament.uk/general-elections)")
 
 selected_rows = None
@@ -72,7 +81,6 @@ if 'selected_file' not in st.session_state:
     st.session_state['selected_file'] = csv_files[selected_file_label]
     reset_state()
 
-# Update session state if a new file is selected
 if st.session_state['selected_file'] != csv_files[selected_file_label]:
     st.session_state['selected_file'] = csv_files[selected_file_label]
     reset_state()
@@ -87,7 +95,7 @@ wanted_cols = ['Main party name',
                'Candidate given name',
                'Constituency name',
                'Country name',
-               'General election polling date'
+               'Polling date'
                ]
 
 cols_to_drop = set(st.session_state['df'].columns) - set(wanted_cols)
@@ -95,21 +103,19 @@ df_to_show = st.session_state['df'].drop(columns=cols_to_drop)
 
 col1, col2, col3 = st.columns([0.05, 0.9, 0.05])
 
-# Display the table with AgGrid
 with col2:
-    st.header("Filter or group by columns...")
+    st.header("Select, Filter or group by columns...")
     response = draw_chart(df_to_show)
 
-    # Display selected row
+    # Display selected rows
     selected_rows = response.get('selected_rows', None)
     if selected_rows is not None:
-        if len(selected_rows) > 0:
-            st.write("You selected:")
-            draw_chart(selected_rows)
-        
-            selected_df = pd.DataFrame(selected_rows)
-            excel_data = to_excel(selected_df)
-            st.download_button(label='Download Selected Data as Excel',
-                               data=excel_data,
-                               file_name='selected_data.xlsx',
-                               mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        st.write("You selected:")
+        draw_chart(selected_rows)
+
+        selected_df = pd.DataFrame(selected_rows)
+        excel_data = to_excel(selected_df)
+        st.download_button(label='Download Selected Data as Excel',
+                           data=excel_data,
+                           file_name='selected_data.xlsx',
+                           mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
