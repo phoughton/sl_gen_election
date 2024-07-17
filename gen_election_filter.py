@@ -23,22 +23,17 @@ def to_excel(df):
 
 
 def draw_chart(a_df):
-
-    # Grid options for AgGrid
     gb = GridOptionsBuilder.from_dataframe(a_df)
     gb.configure_selection(selection_mode='multiple',
                            use_checkbox=True,
                            suppressRowClickSelection=False)
-    gb.configure_grid_options(domLayout='autoHeight',
-                              suppressColumnVirtualisation=True)
-
-    gb.configure_grid_options(domLayout='normal',
+    gb.configure_grid_options(suppressColumnVirtualisation=True,
+                              domLayout='normal',
                               suppressMenuHide=True)
 
     gb.configure_default_column(groupable=True, value=True,
                                 enableRowGroup=True,
                                 aggFunc='sum', filter=True)
-
     grid_opts = gb.build()
 
     return AgGrid(
@@ -46,7 +41,7 @@ def draw_chart(a_df):
         gridOptions=grid_opts,
         enable_enterprise_modules=True,
         fit_columns_on_grid_load=True,
-        height=400,
+        height=350,
         update_mode=GridUpdateMode.SELECTION_CHANGED,
         width='100%'
     )
@@ -54,7 +49,22 @@ def draw_chart(a_df):
 
 # Top Level layout setup
 st.set_page_config(layout="wide")
-selected_file_label = st.selectbox('Select CSV File', list(csv_files.keys()))
+left_border, col_a, col_b, right_border = st.columns([0.05, 0.45, 0.45, 0.05])
+with col_a:
+    st.title('General Election Results, All Candidates')
+    st.write('')
+
+left_border, col_a, col_b, right_border = st.columns([0.05, 0.45, 0.45, 0.05])
+with col_a:
+    st.write('This app allows you to filter and group the data from the UK General Election results.')
+    st.write('Select a file from the dropdown (right) and then filter or group the data.')
+    st.write('Click on a row to see the selected data in a separate table below.')
+with col_b:
+    if st.button('Reset to Defaults'):
+        reset_state()
+        st.experimental_rerun()
+    selected_file_label = st.selectbox('Select CSV File', list(csv_files.keys()), index=1)
+    st.markdown("[Source Data](https://electionresults.parliament.uk/general-elections)")
 
 selected_rows = None
 
@@ -70,22 +80,14 @@ if st.session_state['selected_file'] != csv_files[selected_file_label]:
 if 'df' not in st.session_state:
     reset_state()
 
-# Title of the app
-st.title("UK General Election 2019")
-col_a, col_b = st.columns([0.5, 0.5])
-with col_b:
-    if st.button('Reset to Defaults'):
-        reset_state()
-        st.experimental_rerun()
-
-
 wanted_cols = ['Main party name',
                'Candidate vote count',
                'Majority',
                'Candidate family name',
                'Candidate given name',
                'Constituency name',
-               'Country name'
+               'Country name',
+               'General election polling date'
                ]
 
 cols_to_drop = set(st.session_state['df'].columns) - set(wanted_cols)
