@@ -1,7 +1,7 @@
 from io import BytesIO
 import streamlit as st
 import pandas as pd
-from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
+from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode, JsCode
 
 
 csv_files = {
@@ -27,13 +27,15 @@ def to_excel(df):
 
 
 def draw_chart(a_df):
+
     gb = GridOptionsBuilder.from_dataframe(a_df)
     gb.configure_selection(selection_mode='multiple',
                            use_checkbox=True,
                            suppressRowClickSelection=False)
     gb.configure_grid_options(suppressColumnVirtualisation=True,
                               domLayout='normal',
-                              suppressMenuHide=True)
+                              suppressMenuHide=True,
+                              rowHeight="40px")
 
     gb.configure_default_column(groupable=True, value=True,
                                 enableRowGroup=True,
@@ -53,21 +55,20 @@ def draw_chart(a_df):
 
 # Top Level layout setup
 st.set_page_config(layout="wide")
-left_border, col_a, col_b, right_border = st.columns([0.05, 0.45, 0.45, 0.05])
+
+
+left_border, col_a, col_b, right_border = st.columns([0.05, 0.55, 0.35, 0.05])
 with col_a:
     st.title('General Election Results, All Candidates')
-    st.write('')
-
-left_border, col_a, col_b, right_border = st.columns([0.05, 0.45, 0.45, 0.05])
-with col_a:
     st.write('This app allows you to filter and group the data from the UK General Election results.')
     st.write('Select a file from the dropdown (right) and then filter or group the data.')
     st.write('Click on a row to see the selected data in a separate table below.')
 with col_b:
-
+    st.write('')
+    st.write('')
     years = list(csv_files.keys())
     selected_file_label = st.selectbox(
-        'Select CSV File',
+        'Select CSV File:',
         years,
         index=years.index(max(years)))
     if st.button('Reset to Defaults'):
