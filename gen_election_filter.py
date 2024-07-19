@@ -37,6 +37,9 @@ def draw_chart(a_df):
                               domLayout='normal',
                               suppressMenuHide=True,
                               rowHeight="40px")
+    gb.configure_column("Candidate vote count",
+                        type=["numericColumn"],
+                        valueFormatter="x.toLocaleString()")
 
     gb.configure_default_column(groupable=True, value=True,
                                 enableRowGroup=True,
