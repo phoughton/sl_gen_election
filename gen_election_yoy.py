@@ -59,7 +59,8 @@ combined_df.reset_index(drop=True, inplace=True)
 filtered_df = combined_df[combined_df['Main party name'].isin(parties_to_plot_all.keys())]
 
 filtered_df = sort_group(filtered_df, 'Polling date')
-st.title('Time Series Line Chart of Total Candidate Vote Counts, by Party')
+st.title('Chart of Total Candidate Vote Counts, by UK Political Party')
+st.write('')
 
 color_scheme = alt.Scale(domain=list(parties_to_plot_all.keys()),
                          range=list(parties_to_plot_all.values()))
@@ -84,3 +85,6 @@ rules = alt.Chart(pd.DataFrame({
 final_chart = chart + rules
 
 st.altair_chart(final_chart, use_container_width=True)
+
+st.write('')
+st.markdown("[Source Data](https://electionresults.parliament.uk/general-elections)")
