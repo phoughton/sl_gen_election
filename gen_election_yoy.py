@@ -65,7 +65,7 @@ color_scheme = alt.Scale(domain=list(parties_to_plot_all.keys()),
                          range=list(parties_to_plot_all.values()))
 
 chart = alt.Chart(filtered_df).mark_line().encode(
-    x='Polling date:T',
+    x=alt.X('Polling date:T', axis=alt.Axis(format='%Y-%m-%d')),
     y='Candidate vote count:Q',
     color=alt.Color('Main party name:N',
                     scale=color_scheme)
@@ -73,5 +73,14 @@ chart = alt.Chart(filtered_df).mark_line().encode(
     height=600
 )
 
-# Display the chart in Streamlit
-st.altair_chart(chart, use_container_width=True)
+filtered_df_dates = filtered_df['Polling date'].unique()
+
+rules = alt.Chart(pd.DataFrame({
+    'Polling date': filtered_df_dates
+    })).mark_rule(color='white', strokeDash=[5, 5]).encode(
+    x='Polling date:T'
+)
+
+final_chart = chart + rules
+
+st.altair_chart(final_chart, use_container_width=True)
