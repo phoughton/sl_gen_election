@@ -2,14 +2,7 @@ from io import BytesIO
 import streamlit as st
 import pandas as pd
 from st_aggrid import AgGrid, GridOptionsBuilder, GridUpdateMode
-
-
-csv_files = {
-    '2015': 'data/candidate-level-results-general-election-07-05-2015.csv',
-    '2017': 'data/candidate-level-results-general-election-08-06-2017.csv',
-    '2019': 'data/candidate-level-results-general-election-12-12-2019.csv',
-    '2024': 'data/candidate-level-results-general-election-04-07-2024.csv'
-}
+from data_config import csv_files
 
 
 def reset_state():
@@ -43,6 +36,8 @@ def draw_chart(a_df):
 
     gb.configure_default_column(groupable=True, value=True,
                                 enableRowGroup=True,
+                                resizable=True,
+                                autoSizeMode='fitCellContents',
                                 aggFunc='sum', filter=True)
     grid_opts = gb.build()
 
@@ -50,10 +45,9 @@ def draw_chart(a_df):
         a_df,
         gridOptions=grid_opts,
         enable_enterprise_modules=True,
-        fit_columns_on_grid_load=True,
+        autoSizeColumns=True,
         height=350,
-        update_mode=GridUpdateMode.SELECTION_CHANGED,
-        width='100%'
+        update_mode=GridUpdateMode.SELECTION_CHANGED
     )
 
 

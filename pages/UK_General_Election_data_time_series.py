@@ -1,16 +1,10 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+from data_config import csv_files
 
 
-csv_files = {
-    '2015': 'data/candidate-level-results-general-election-07-05-2015.csv',
-    '2017': 'data/candidate-level-results-general-election-08-06-2017.csv',
-    '2019': 'data/candidate-level-results-general-election-12-12-2019.csv',
-    '2024': 'data/candidate-level-results-general-election-04-07-2024.csv'
-}
-
-parties_to_plot_all = {
+parties_2_plot = {
     'Conservative': 'blue',
     'Labour': 'red',
     'Liberal Democrat': 'yellow',
@@ -39,9 +33,9 @@ for year, file in csv_files.items():
 
     dfs.append(df)
 
-    df['Main party name'] = df['Main party name'].apply(lambda x: 'Other' if x not in list(parties_to_plot_all.keys()) else x)
+    df['Main party name'] = df['Main party name'].apply(lambda x: 'Other' if x not in list(parties_2_plot.keys()) else x)
 
-    for party in parties_to_plot_all.keys():
+    for party in parties_2_plot.keys():
         if party not in df['Main party name'].unique():
             df.loc[len(df)] = {'Main party name': party, 'Candidate vote count': 0, 'Polling date': df['Polling date'].max()}
 
@@ -56,14 +50,19 @@ for year, file in csv_files.items():
 combined_df = pd.concat(dfs_grouped)
 combined_df.reset_index(drop=True, inplace=True)
 
-filtered_df = combined_df[combined_df['Main party name'].isin(parties_to_plot_all.keys())]
+filtered_df = combined_df[combined_df['Main party name'].isin(parties_2_plot.keys())]
 
 filtered_df = sort_group(filtered_df, 'Polling date')
-st.title('Chart of Total Candidate Vote Counts, by UK Political Party')
+starting = min(map(int, list(csv_files.keys())))
+ending = max(map(int, list(csv_files.keys())))
+date_range = f"{starting} - {ending}"
+msg = "Total Candidate Vote Counts," \
+    "by UK Political Party in General Elections"
+st.title(f'{msg} {date_range}')
 st.write('')
 
-color_scheme = alt.Scale(domain=list(parties_to_plot_all.keys()),
-                         range=list(parties_to_plot_all.values()))
+color_scheme = alt.Scale(domain=list(parties_2_plot.keys()),
+                         range=list(parties_2_plot.values()))
 
 chart = alt.Chart(filtered_df).mark_line().encode(
     x=alt.X('Polling date:T', axis=alt.Axis(format='%Y-%m-%d')),
