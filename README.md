@@ -12,4 +12,4 @@ streamlit run gen_election_filter.py
 
 Selecting items in the first table will cause a secondary table to appear, these items can be downloaded (as a spreadsheet) if needed (a button will appear).
 
-This is available [online, hosted by Streamlit](https://sl-gen-election-phoughton.streamlit.app/).
+This is available [online, hosted by Streamlit](https://uk-general-election-data-viewer.streamlit.app/).
