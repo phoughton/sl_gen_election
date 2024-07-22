@@ -73,6 +73,7 @@ with col_b:
         reset_state()
         st.experimental_rerun()
     st.markdown("[Source Data](https://electionresults.parliament.uk/general-elections)")
+    st.markdown("[My GitHub](https://github.com/phoughton)")
 
 selected_rows = None
 

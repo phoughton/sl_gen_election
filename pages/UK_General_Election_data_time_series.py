@@ -33,11 +33,14 @@ for year, file in csv_files.items():
 
     dfs.append(df)
 
-    df['Main party name'] = df['Main party name'].apply(lambda x: 'Other' if x not in list(parties_2_plot.keys()) else x)
+    filter = lambda x: 'Other' if x not in list(parties_2_plot.keys()) else x
+    df['Main party name'] = df['Main party name'].apply(filter)
 
     for party in parties_2_plot.keys():
         if party not in df['Main party name'].unique():
-            df.loc[len(df)] = {'Main party name': party, 'Candidate vote count': 0, 'Polling date': df['Polling date'].max()}
+            df.loc[len(df)] = {'Main party name': party,
+                               'Candidate vote count': 0,
+                               'Polling date': df['Polling date'].max()}
 
     grouped_df = df.groupby('Main party name').agg({
         'Candidate vote count': 'sum',
@@ -65,7 +68,7 @@ color_scheme = alt.Scale(domain=list(parties_2_plot.keys()),
                          range=list(parties_2_plot.values()))
 
 chart = alt.Chart(filtered_df).mark_line().encode(
-    x=alt.X('Polling date:T', axis=alt.Axis(format='%Y-%m-%d')),
+    x=alt.X('Polling date:T', axis=alt.Axis(format='%Y')),
     y='Candidate vote count:Q',
     color=alt.Color('Main party name:N',
                     scale=color_scheme)
@@ -80,10 +83,25 @@ rules = alt.Chart(pd.DataFrame({
     })).mark_rule(color='white', strokeDash=[5, 5]).encode(
     x='Polling date:T'
 )
+specific_date_df = filtered_df[filtered_df['Polling date'].isin([
+    '2024-07-04',
+    '2019-12-12',
+    '2017-06-08',
+    '2015-05-07',
+    '2010-05-06',])]
+specific_date_df = specific_date_df.drop_duplicates(subset='Polling date')
 
-final_chart = chart + rules
+text = alt.Chart(specific_date_df).mark_text(
+            align='right',
+            fontSize=18,
+            dx=98, color='grey',
+    ).encode(
+        x=alt.X('Polling date:T', axis=alt.Axis(format='%Y-%m-%d')),
+        text='Polling date:T')
+final_chart = chart + rules + text
 
 st.altair_chart(final_chart, use_container_width=True)
 
 st.write('')
 st.markdown("[Source Data](https://electionresults.parliament.uk/general-elections)")
+st.markdown("[My GitHub](https://github.com/phoughton)")
