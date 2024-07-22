@@ -59,7 +59,7 @@ filtered_df = sort_group(filtered_df, 'Polling date')
 starting = min(map(int, list(csv_files.keys())))
 ending = max(map(int, list(csv_files.keys())))
 date_range = f"{starting} - {ending}"
-msg = "Total Candidate Vote Counts," \
+msg = "Total Candidate Vote Counts, " \
     "by UK Political Party in General Elections"
 st.title(f'{msg} {date_range}')
 st.write('')
