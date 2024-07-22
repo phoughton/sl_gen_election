@@ -12,7 +12,7 @@ parties_2_plot = {
     'UK Independence Party': 'purple',
     'Scottish National Party': 'goldenrod',
     'Plaid Cymru': 'brown',
-    'Brexit Party': 'aliceblue',
+    'The Brexit Party': 'aliceblue',
     'Reform UK': 'aquamarine',
     'Other': 'gray'}
 
